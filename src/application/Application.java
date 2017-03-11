@@ -7,8 +7,10 @@ import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDateTime;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import main.Client;
@@ -35,7 +37,13 @@ public class Application extends JFrame implements ActionListener {
 		buildConnectionPanel();
 		buildMessagePanel();
 		buildListPanel();
-		server = new Server(20000, this);
+		
+		String port = JOptionPane.showInputDialog(
+				this,
+				"Type port number:",
+				"Start server...",
+				JOptionPane.PLAIN_MESSAGE);
+		server = new Server(Integer.parseInt(port), this);
 		serverThread = new Thread(server);
 		serverThread.start();
 		
@@ -52,9 +60,10 @@ public class Application extends JFrame implements ActionListener {
 		Object source = e.getSource();
 		
 		if (source.equals(messagePanel.getSendButton())) {
+			String time = LocalDateTime.now().toString();
 			message.setText(messagePanel.getMessageTextField().getText());
-			System.out.println("Send -> hostName:portNumber");
-			messagePanel.getConversationTextArea().append("you at time\n------\n" + message.getText() + "\n-----\n");
+//			System.out.println("Send -> hostName:portNumber");
+			messagePanel.getConversationTextArea().append("You at " + time + ":\n------\n" + message.getText() + "\n-----\n");
 			new Thread(() -> {
 				synchronized (message) {
 					message.notify();
@@ -62,15 +71,18 @@ public class Application extends JFrame implements ActionListener {
 			}).start();
 			
 		} else if (source.equals(connectionPanel.getConnectButton())) {
-			System.out.println("Connect button pressed!");
+//			System.out.println("Connect button pressed!");
 			String hostName = connectionPanel.getHostNameTextField().getText();
 			int portNumber = Integer.parseInt(connectionPanel.getPortNumberTextField().getText());
 			client = new Client(hostName, portNumber, this, message);
+			client.setRunning(true);
 			clientThread = new Thread(client);
 			clientThread.start();
 			
 		} else if (source.equals(connectionPanel.getDisconnectButton())) {
-			System.out.println("Disconnect button pressed!");
+//			System.out.println("Disconnect button pressed!");
+			client.setRunning(false);
+			clientThread.interrupt();
 		}
 		
 	}

@@ -20,6 +20,7 @@ public class Client implements Runnable {
 	private int portNumber;
 	private String hostName;
 	private Message message;
+	private volatile boolean running = false;
 	
 	public Client(String host, int port, Application app, Message message) {
 		this.hostName = host;
@@ -28,18 +29,21 @@ public class Client implements Runnable {
 		this.message = message;
 	}
 	
+	public void setRunning(boolean running) {
+		this.running = running;
+	}
+	
 	public void run() {
 		try (
 				Socket socket = new Socket(hostName, portNumber);
 				ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 				ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 		) {
-			while (true) {
+			while (running) {
 				synchronized (message) {
 					message.wait();
 					System.out.println("I was waiting for it!");
 					out.writeObject(message.getText());
-//					out.flush();
 				}
 			}
 		} catch (UnknownHostException uhe) {
