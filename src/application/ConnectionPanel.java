@@ -48,7 +48,7 @@ public class ConnectionPanel extends JPanel {
 		constraints.ipadx = 30;
 		add(portNumberLabel, constraints);
 		
-		portNumberTextField = new JTextField("port");
+		portNumberTextField = new JTextField("20000");
 		constraints.gridx = 1;
 		constraints.gridy = 1;
 		constraints.ipadx = 200;
@@ -75,5 +75,13 @@ public class ConnectionPanel extends JPanel {
 	
 	public JButton getDisconnectButton() {
 		return disconnectButton;
+	}
+	
+	public JTextField getHostNameTextField() {
+		return hostNameTextField;
+	}
+	
+	public JTextField getPortNumberTextField() {
+		return portNumberTextField;
 	}
 }

@@ -1,42 +1,55 @@
 package main;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class Client {
+import application.Application;
+import application.Message;
+
+public class Client implements Runnable {
 	
-	public static void main(String[] args) throws IOException {
-		if (args.length != 2) {
-			System.err.println("Usage: java Client <hostname> <portnumber>");
-			System.exit(1);
-		}
-		String hostName = args[0];
-		int portNumber = Integer.parseInt(args[1]);
+	private Application application;
+	private int portNumber;
+	private String hostName;
+	private Message message;
+	
+	public Client(String host, int port, Application app, Message message) {
+		this.hostName = host;
+		this.portNumber = port;
+		this.application = app;
+		this.message = message;
+	}
+	
+	public void run() {
 		try (
 				Socket socket = new Socket(hostName, portNumber);
-				PrintWriter out = new PrintWriter(
-						socket.getOutputStream(), true);
-				BufferedReader in = new BufferedReader(
-						new InputStreamReader(socket.getInputStream()));
-				BufferedReader stdIn = new BufferedReader(
-						new InputStreamReader(System.in));
+				ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+				ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 		) {
-			String userInput;
-			while ((userInput = stdIn.readLine()) != null) {
-				out.println(userInput);
-				System.out.println("echo : " + in.readLine());
+			while (true) {
+				synchronized (message) {
+					message.wait();
+					System.out.println("I was waiting for it!");
+					out.writeObject(message.getText());
+//					out.flush();
+				}
 			}
-			
 		} catch (UnknownHostException uhe) {
 			System.err.println("Don't know about host " + hostName);
 			System.exit(1);
 		} catch (IOException ioe) {
 			System.err.println("Couldn't get I/O for the connection to " + hostName);
 			System.exit(1);
+		} catch (InterruptedException inte) {
+			inte.printStackTrace();
 		}
 	}
 }

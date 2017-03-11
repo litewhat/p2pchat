@@ -11,11 +11,18 @@ import java.awt.event.ActionListener;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import main.Client;
 import main.Server;
 
 public class Application extends JFrame implements ActionListener {
 	
 	private Server server;
+	private Thread serverThread;
+	private Client client;
+	private Thread clientThread;
+	
+	private Message message;
+	
 	private ConnectionPanel connectionPanel;
 	private MessagePanel messagePanel;
 	private ListPanel listPanel;
@@ -29,7 +36,10 @@ public class Application extends JFrame implements ActionListener {
 		buildMessagePanel();
 		buildListPanel();
 		server = new Server(20000, this);
-		new Thread(server).start();
+		serverThread = new Thread(server);
+		serverThread.start();
+		
+		message = new Message("");
 
 		pack();
 		setLocationToCenter();
@@ -42,13 +52,23 @@ public class Application extends JFrame implements ActionListener {
 		Object source = e.getSource();
 		
 		if (source.equals(messagePanel.getSendButton())) {
-			String message = messagePanel.getMessageTextField().getText();
+			message.setText(messagePanel.getMessageTextField().getText());
 			System.out.println("Send -> hostName:portNumber");
-			System.out.println(message);
-			messagePanel.getConversationTextArea().append("you at time\n------\n" + message + "\n-----\n");
+			messagePanel.getConversationTextArea().append("you at time\n------\n" + message.getText() + "\n-----\n");
+			new Thread(() -> {
+				synchronized (message) {
+					message.notify();
+				}
+			}).start();
+			
 		} else if (source.equals(connectionPanel.getConnectButton())) {
 			System.out.println("Connect button pressed!");
-
+			String hostName = connectionPanel.getHostNameTextField().getText();
+			int portNumber = Integer.parseInt(connectionPanel.getPortNumberTextField().getText());
+			client = new Client(hostName, portNumber, this, message);
+			clientThread = new Thread(client);
+			clientThread.start();
+			
 		} else if (source.equals(connectionPanel.getDisconnectButton())) {
 			System.out.println("Disconnect button pressed!");
 		}
@@ -96,7 +116,8 @@ public class Application extends JFrame implements ActionListener {
 	public MessagePanel getMessagePanel() {
 		return messagePanel; 
 	}
-
-
-
+	
+	public Client getClient() {
+		return client;
+	}
 }
