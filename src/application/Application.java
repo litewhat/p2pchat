@@ -14,6 +14,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import main.Client;
+import main.Message;
 import main.Server;
 
 public class Application extends JFrame implements ActionListener {

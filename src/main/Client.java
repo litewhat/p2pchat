@@ -12,7 +12,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import application.Application;
-import application.Message;
 
 public class Client implements Runnable {
 	
