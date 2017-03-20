@@ -76,4 +76,9 @@ public class MessagePanel extends JPanel {
 	public JTextArea getMessageTextField() {
 		return messageTextField;
 	}
+
+	public void clearMessages() {
+		conversationTextArea.setText("");
+		
+	}
 }

@@ -8,8 +8,11 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDateTime;
+import java.util.List;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -48,7 +51,7 @@ public class Application extends JFrame implements ActionListener {
 		serverThread = new Thread(server);
 		serverThread.start();
 		
-		message = new Message("");
+		message = new Message("");		
 
 		pack();
 		setLocationToCenter();
@@ -63,7 +66,6 @@ public class Application extends JFrame implements ActionListener {
 		if (source.equals(messagePanel.getSendButton())) {
 			String time = LocalDateTime.now().toString();
 			message.setText(messagePanel.getMessageTextField().getText());
-//			System.out.println("Send -> hostName:portNumber");
 			messagePanel.getConversationTextArea().append("You at " + time + ":\n------\n" + message.getText() + "\n-----\n");
 			new Thread(() -> {
 				synchronized (message) {
@@ -72,20 +74,20 @@ public class Application extends JFrame implements ActionListener {
 			}).start();
 			
 		} else if (source.equals(connectionPanel.getConnectButton())) {
-//			System.out.println("Connect button pressed!");
 			String hostName = connectionPanel.getHostNameTextField().getText();
 			int portNumber = Integer.parseInt(connectionPanel.getPortNumberTextField().getText());
+			String element = hostName + " : " + portNumber;
+			if (!listPanel.getListModel().contains(element)) {
+				listPanel.getListModel().addElement(element);
+			}
 			client = new Client(hostName, portNumber, this, message);
-			client.setRunning(true);
 			clientThread = new Thread(client);
 			clientThread.start();
-			
 		} else if (source.equals(connectionPanel.getDisconnectButton())) {
-//			System.out.println("Disconnect button pressed!");
-			client.setRunning(false);
+			messagePanel.clearMessages();
 			clientThread.interrupt();
+			client = null;
 		}
-		
 	}
 	
 	private void setLocationToCenter() {
