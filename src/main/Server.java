@@ -30,6 +30,9 @@ public class Server implements Runnable {
 			) {
 				String address = clientSocket.getInetAddress().getHostAddress();
 				System.out.println("Open connection with: " + address);
+				if(!application.showShouldAcceptConnectionMessage()) {
+					continue;
+				}
 				while (true) {
 					String message = (String) in.readObject();
 					String time = LocalDateTime.now().toString();

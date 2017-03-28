@@ -19,12 +19,14 @@ public class Client implements Runnable {
 	private int portNumber;
 	private String hostName;
 	private Message message;
+	private boolean connected;
 	
 	public Client(String host, int port, Application app, Message message) {
 		this.hostName = host;
 		this.portNumber = port;
 		this.application = app;
 		this.message = message;
+		this.connected = false;
 	}
 	
 	public void run() {
@@ -33,6 +35,7 @@ public class Client implements Runnable {
 				ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 				ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
 		) {
+			connected = true;
 			while (true) {
 				synchronized (message) {
 					message.wait();
@@ -42,12 +45,12 @@ public class Client implements Runnable {
 			}
 		} catch (UnknownHostException uhe) {
 			System.err.println("Don't know about host " + hostName);
-//			System.exit(1);
 		} catch (IOException ioe) {
 			System.err.println("Couldn't get I/O for the connection to " + hostName);
-//			System.exit(1);
 		} catch (InterruptedException inte) {
 			inte.printStackTrace();
+		} finally {
+			connected = false;
 		}
 	}
 }

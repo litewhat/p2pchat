@@ -8,13 +8,9 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDateTime;
-import java.util.List;
 
-import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 
 import main.Client;
 import main.Message;
@@ -42,11 +38,9 @@ public class Application extends JFrame implements ActionListener {
 		buildMessagePanel();
 		buildListPanel();
 		
-		String port = JOptionPane.showInputDialog(
-				this,
-				"Type port number:",
-				"Start server...",
-				JOptionPane.PLAIN_MESSAGE);
+		// You can choose on what port server will be listening to.
+		String port = showInputPort();
+				
 		server = new Server(Integer.parseInt(port), this);
 		serverThread = new Thread(server);
 		serverThread.start();
@@ -59,6 +53,8 @@ public class Application extends JFrame implements ActionListener {
 		setResizable(false);
 	}
 	
+	
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
@@ -134,5 +130,28 @@ public class Application extends JFrame implements ActionListener {
 	
 	public Client getClient() {
 		return client;
+	}
+	
+	private String showInputPort() {
+		return JOptionPane.showInputDialog(
+					this,
+					"Type port number:",
+					"Start server...",
+					JOptionPane.PLAIN_MESSAGE);
+	}
+
+	public boolean showShouldAcceptConnectionMessage() {
+		int result = JOptionPane.showOptionDialog(
+							this,
+							"Do you want to accept connection from ...",
+							"Connection",
+							JOptionPane.YES_NO_OPTION,
+							JOptionPane.QUESTION_MESSAGE,
+							null,
+							null,
+							null);
+		if (result == 0)
+			return true;
+		return false;
 	}
 }
