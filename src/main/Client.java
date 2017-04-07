@@ -1,3 +1,10 @@
+/**
+ * <h1>Client</h1>
+ * This class specifies client logic.
+ * 
+ * @author Paweł Zielonka
+ * @version 1.0
+ */
 package main;
 
 import java.awt.event.ActionEvent;
@@ -29,6 +36,9 @@ public class Client implements Runnable {
 		this.connected = false;
 	}
 	
+	/**
+	 * Runs client thread that sends messages to currently connected server.
+	 */
 	public void run() {
 		try (
 				Socket socket = new Socket(hostName, portNumber);

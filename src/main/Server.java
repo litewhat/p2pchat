@@ -1,3 +1,10 @@
+/**
+ * <h1>Server</h1>
+ * This class specifies server logic.
+ * 
+ * @author Paweł Zielonka
+ * @version 1.0
+ */
 package main;
 
 import java.io.IOException;
@@ -18,7 +25,10 @@ public class Server implements Runnable {
 		this.portNumber = port;
 		this.application = app;
 	}
-
+	
+	/**
+	 * Runs server thread that listens to currently connected client.
+	 */
 	@Override
 	public void run() {
 		while (true) {

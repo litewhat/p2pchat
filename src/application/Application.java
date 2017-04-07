@@ -1,3 +1,10 @@
+/**
+ * <h1>Chat P2P</h1>
+ * GUI Peer-to-peer chat application.
+ * 
+ * @author Paweł Zielonka
+ * @version 1.0
+ */
 package application;
 
 import java.awt.Dimension;
@@ -29,6 +36,13 @@ public class Application extends JFrame implements ActionListener {
 	private MessagePanel messagePanel;
 	private ListPanel listPanel;
 	
+	/**
+	 * Constructor that:
+	 * sets title of application,
+	 * sets layout to java.awt.GridBagLayout,
+	 * shows input dialog to get porn number,
+	 * starts new server listening on specified number.
+	 */
 	public Application() {
 		super("Chat v0.0.1");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -53,8 +67,9 @@ public class Application extends JFrame implements ActionListener {
 		setResizable(false);
 	}
 	
-	
-
+	/**
+	 * Handles events when buttons: "send", "connect" or "disconnect" are clicked.
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
@@ -62,7 +77,8 @@ public class Application extends JFrame implements ActionListener {
 		if (source.equals(messagePanel.getSendButton())) {
 			String time = LocalDateTime.now().toString();
 			message.setText(messagePanel.getMessageTextField().getText());
-			messagePanel.getConversationTextArea().append("You at " + time + ":\n------\n" + message.getText() + "\n-----\n");
+			messagePanel.getConversationTextArea().append(
+					"You at " + time + ":\n------\n" + message.getText() + "\n-----\n");
 			new Thread(() -> {
 				synchronized (message) {
 					message.notify();
@@ -86,6 +102,9 @@ public class Application extends JFrame implements ActionListener {
 		}
 	}
 	
+	/**
+	 * Sets position of window to the center of screen.
+	 */
 	private void setLocationToCenter() {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		int width  = (int) screenSize.getWidth() / 2;
@@ -95,6 +114,9 @@ public class Application extends JFrame implements ActionListener {
 		super.setLocation(x, y);
 	}
 	
+	/**
+	 * Method that builds {@link application.ConnectionPanel}.
+	 */
 	private void buildConnectionPanel() {
 		connectionPanel = new ConnectionPanel(this);
 		GridBagConstraints constraints = new GridBagConstraints();
@@ -104,6 +126,9 @@ public class Application extends JFrame implements ActionListener {
 		add(connectionPanel, constraints);
 }
 	
+	/**
+	 * Method that builds {@link application.MessagePanel}.
+	 */
 	private void buildMessagePanel() {
 		messagePanel = new MessagePanel(this);
 		GridBagConstraints constraints = new GridBagConstraints();
@@ -113,6 +138,9 @@ public class Application extends JFrame implements ActionListener {
 		add(messagePanel, constraints);
 	}
 	
+	/**
+	 * Method that builds {@link application.ListPanel}.
+	 */
 	private void buildListPanel() {
 		listPanel = new ListPanel(this);
 		GridBagConstraints constraints = new GridBagConstraints();
@@ -132,6 +160,10 @@ public class Application extends JFrame implements ActionListener {
 		return client;
 	}
 	
+	/**
+	 * Displays input dialog to specify the port number.
+	 * @return port number as String
+	 */
 	private String showInputPort() {
 		return JOptionPane.showInputDialog(
 					this,
@@ -140,6 +172,10 @@ public class Application extends JFrame implements ActionListener {
 					JOptionPane.PLAIN_MESSAGE);
 	}
 
+	/**
+	 * Displays option dialog to accept or decline connection.
+	 * @return true if accepted or false if declined
+	 */
 	public boolean showShouldAcceptConnectionMessage() {
 		int result = JOptionPane.showOptionDialog(
 							this,

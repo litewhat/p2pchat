@@ -1,3 +1,10 @@
+/**
+ * <h1>Connection Panel</h1>
+ * This class specifies content and grid of message panel in application uses it.
+ * 
+ * @author Paweł Zielonka
+ * @version 1.0
+ */
 package application;
 
 import java.awt.GridBagConstraints;
